@@ -14,12 +14,10 @@ and compute 1/PSNR , if 1/PSNR more than threshold ,continue "psaudo-quantum" pr
 
 I cannot know all of quantum computing , but I feel quantum-resize process similar to real quantum computing.
 
+quantum-resize requires libgd graphics library.
+
 ## quantum-resize for many photograph
 quantum-resize is match for photograph from real world.
 and good for 2D animation frames.
 for pure 2D paint ... use waifu2x first.
 
-![original](miku-noisy.png "ORIGINAL")
-![reflex-resize applied](miku-noisy-5x.png "reflex-resize applied")
-
-## What is improved
