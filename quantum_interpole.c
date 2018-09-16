@@ -22,7 +22,6 @@ SOFTWARE.
 */
 #include<stdio.h>
 #include<gd.h>
-#include"capsule.h"
 
 #define KNL 6
 #define HALF_KNL 3
@@ -30,28 +29,31 @@ SOFTWARE.
 #define COLORS 3
 #define ITER 5
 
-static int input_pixels[KNL][KNL];
-static int output_pixels[KNL][KNL];
-static int mse[HALF_KNL][HALF_KNL];
+static int input_pixels[COLORS][KNL][KNL];
+static int output_pixels[COLORS][KNL][KNL];
+static int mse[COLORS][HALF_KNL][HALF_KNL];
 static unsigned int imageSX;
 static unsigned int imageSY;
 static FILE *randomfd;
 
 static long half_psnr_mse(void)
 {
-	int halved_pixels[HALF_KNL][HALF_KNL];
-	unsigned int x,y,ox,oy;
+	int halved_pixels[COLORS][HALF_KNL][HALF_KNL];
+	unsigned int x,y,ox,oy,c;
 	long all=0;
 	for( y=0 , oy=0 ; y < HALF_KNL ; y++ , oy+=2 )
 	{
 		for( x=0 , ox=0 ; x < HALF_KNL ; x++ , ox+=2 )
 		{
-			int tmp =0;
-			tmp += output_pixels[oy][ox] ;
-			tmp += output_pixels[oy][ox+1];
-			tmp += output_pixels[oy+1][ox];
-			tmp += output_pixels[oy+1][ox+1];
-			halved_pixels[y][x] = tmp / 4;
+			for ( c=0 ; c<COLORS ; c++)
+			{
+				int tmp =0;
+				tmp += output_pixels[c][oy][ox] ;
+				tmp += output_pixels[c][oy][ox+1];
+				tmp += output_pixels[c][oy+1][ox];
+				tmp += output_pixels[c][oy+1][ox+1];
+				halved_pixels[c][y][x] = tmp / 4;
+			}
 		}
 	}
 
@@ -59,12 +61,18 @@ static long half_psnr_mse(void)
 	{
 		for( x=0 ; x < HALF_KNL ; x++ )
 		{
-			long a,b,tmp;
-			a = (long)input_pixels[y][x];
-			b = (long)halved_pixels[y][x];
-			tmp = (( a - b )*( a - b ));
-			mse[y][x]=tmp;
-			all+=tmp;
+			for ( c=0 ; c < COLORS ; c++ )
+			{
+				long a,b,tmp;
+				a = (long)input_pixels[c][y][x];
+				b = (long)halved_pixels[c][y][x];
+				all  += (( a - b )*( a - b ));
+				mse[c][y][x]= a - b ;
+				if( mse[c][y][x] < 0 )
+					mse[c][y][x] = b - a ;
+				if (mse[c][y][x] < 2 )
+					mse[c][y][x] = 2;
+			}
 		}
 	}
 	return all;
@@ -72,26 +80,30 @@ static long half_psnr_mse(void)
 
 static int quantum_art( int threshold )
 {
-	unsigned int x,y;
-	int factor[KNL][KNL];
+	unsigned int x,y,c;
 	long all;
+	half_psnr_mse() ;
 	for(;;)
 	{
 		for( y=0 ; y < KNL ; y++)
 		{
 			for( x=0 ; x < KNL ; x++)
 			{
-				signed char tmp;
-				tmp = 0xFF & fgetc(randomfd);
-				output_pixels[y][x] += (int)tmp % ( all / (HALF_KNL * HALF_KNL *(MAX-1) ) /*(mse[y/2][x/2] / (MAX-1) +1*/ +1 )  ;
-				if(output_pixels[y][x] >= MAX )
-					output_pixels[y][x] = MAX-1 ;
-				else if(output_pixels[y][x] < 0 )
-					output_pixels[y][x] = 0 ;
+				for ( c=0 ; c<COLORS ; c++)
+				{
+	
+					signed char rand;
+					rand = 0xFF & fgetc(randomfd);
+					output_pixels[c][y][x] += (int)rand % ( mse[c][y/2][x/2] /2 ) ;
+					if(output_pixels[c][y][x] >= MAX )
+						output_pixels[c][y][x] = MAX-1 ;
+					else if(output_pixels[c][y][x] < 0 )
+						output_pixels[c][y][x] = 0 ;
+				}
 			}
 		}
 		all = half_psnr_mse() ;
-		if ( all /( HALF_KNL * HALF_KNL * (MAX-1) ) < threshold )
+		if ( all /( HALF_KNL * HALF_KNL * COLORS * COLORS * (MAX-1) ) < threshold )
 			return 0;
 		
 	}
@@ -107,6 +119,7 @@ static gdImagePtr twice(gdImagePtr input_image)
 	imageSY = input_imageSY * 2;
 	gdImageSetInterpolationMethod(input_image,GD_BELL);
 	output_image = gdImageScale(input_image,  imageSX , imageSY );
+	/*gdImageMeanRemoval(output_image);*/
 	return output_image;
 }
 
@@ -125,44 +138,37 @@ gdImagePtr quantum_interpole(gdImagePtr input_image , int threshold)
 	{
 		for( x=0; x < input_SX ; x++)
 		{
-			int c;
-			for( c=0 ; c < COLORS ; c++)
+			int read_x,read_y,i,j;
+			for( read_y= y-1 , j=0 ; j<HALF_KNL ; read_y++ , j++ )
 			{
-				int read_y , read_x , i , j;
-				switch(c)
+				for( read_x= x-1 , i=0 ; i<HALF_KNL ; read_x++ ,i++ )
 				{
-					case 0:
-						set_rgb('R');
-						break;
-					case 1:
-						set_rgb('G');
-						break;
-					case 2:
-						set_rgb('B');
-						break;
+					int tmp;
+					tmp = gdImageGetTrueColorPixel( input_image , read_x , read_y );
+					input_pixels[0][j][i] = gdTrueColorGetRed(tmp);
+					input_pixels[1][j][i] = gdTrueColorGetGreen(tmp);
+					input_pixels[2][j][i] = gdTrueColorGetBlue(tmp);
 				}
-				for( read_y= y-1 , j=0 ; j<HALF_KNL ; read_y++ , j++ )
+			}
+			for( read_y= y*2-2 , j=0 ; j<KNL ; read_y++ , j++ )
+			{
+				for( read_x= x*2-2 , i=0 ; i<KNL ; read_x++ ,i++ )
 				{
-					for( read_x= x-1 , i=0 ; i<HALF_KNL ; read_x++ ,i++ )
-					{
-						input_pixels[j][i] = getpixel(input_image , read_x , read_y);
-					}
+					int tmp;
+					tmp = gdImageGetTrueColorPixel( output_image , read_x , read_y );
+					output_pixels[0][j][i] = gdTrueColorGetRed(tmp);
+					output_pixels[1][j][i] = gdTrueColorGetGreen(tmp);
+					output_pixels[2][j][i] = gdTrueColorGetBlue(tmp);
 				}
-				for( read_y= y*2-2 , j=0 ; j<KNL ; read_y++ , j++ )
+			}
+			quantum_art(threshold);
+			for( read_y=y*2 , j=2 ; j<=3 ; read_y++ , j++ )
+			{
+				for( read_x=x*2 , i=2 ; i<=3 ; read_x++ ,i++ )
 				{
-					for( read_x= x*2-2 , i=0 ; i<KNL ; read_x++ ,i++ )
-					{
-						output_pixels[j][i] = getpixel(output_image , read_x , read_y);
-					}
-				}
-				
-				quantum_art(threshold);
-				for( read_y=y*2 , j=2 ; j<=3 ; read_y++ , j++ )
-				{
-					for( read_x=x*2 , i=2 ; i<=3 ; read_x++ ,i++ )
-					{
-						setpixel(output_image,output_pixels[j][i],read_x,read_y);
-					}
+					int pixel;
+					pixel = gdImageColorClosest(output_image,output_pixels[0][j][i],output_pixels[1][j][i],output_pixels[2][j][i]);
+					gdImageSetPixel(output_image,read_x,read_y,pixel);
 				}
 			}
 		}
