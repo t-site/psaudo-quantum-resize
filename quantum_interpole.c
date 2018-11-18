@@ -119,7 +119,7 @@ static gdImagePtr twice(gdImagePtr input_image)
 	imageSY = input_imageSY * 2;
 	gdImageSetInterpolationMethod(input_image,GD_BELL);
 	output_image = gdImageScale(input_image,  imageSX , imageSY );
-	/*gdImageMeanRemoval(output_image);*/
+	gdImageSmooth(output_image , 100.0f);
 	return output_image;
 }
 
