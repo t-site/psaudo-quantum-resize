@@ -16,8 +16,13 @@ I cannot know all of quantum computing , but I feel quantum-resize process simil
 
 quantum-resize requires C compiler , /dev/urandom , and libgd graphics library.
 
+### New qresize1.5 command
+New qresize1.5 command available.
+shrink output image to 1.5x for more condensed image with suppressed juggy.
+scale by cascade with a shell script for much more high quality.
+
 ## quantum-resize for many photograph
-quantum-resize is match for photograph from real world.
+quantum-resize is match for photograph from the real world.
 and good for 2D animation frames.
 for pure 2D paint ... use waifu2x first.
 
