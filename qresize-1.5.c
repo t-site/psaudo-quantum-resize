@@ -87,7 +87,7 @@ int main(int argc,char **argv)
 		return 2;
 	}
 	qint_image = quantum_interpole(input_image , threshold);
-	gdImageSetInterpolationMethod( qint_image , GD_LINEAR );
+	gdImageSetInterpolationMethod( qint_image , GD_BELL );
 	outputSX = gdImageSX( input_image ) + gdImageSX( input_image ) / 2 ;
 	outputSY = gdImageSY( input_image ) + gdImageSY( input_image ) / 2 ;
 	output_image = gdImageScale( qint_image , outputSX , outputSY );
