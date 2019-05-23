@@ -23,8 +23,8 @@ SOFTWARE.
 #include<stdio.h>
 #include<gd.h>
 
-#define KNL 6
-#define HALF_KNL 3
+#define KNL 10
+#define HALF_KNL 5
 #define MAX 256
 #define COLORS 3
 #define ITER 5
@@ -162,9 +162,9 @@ gdImagePtr quantum_interpole(gdImagePtr input_image , int threshold)
 				}
 			}
 			quantum_art(threshold);
-			for( read_y=y*2 , j=2 ; j<=3 ; read_y++ , j++ )
+			for( read_y = y*2 , j = HALF_KNL-1 ; j <= HALF_KNL ; read_y++ , j++ )
 			{
-				for( read_x=x*2 , i=2 ; i<=3 ; read_x++ ,i++ )
+				for( read_x = x*2 , i = HALF_KNL-1 ; i <= HALF_KNL ; read_x++ ,i++ )
 				{
 					int pixel;
 					pixel = gdImageColorClosest(output_image,output_pixels[0][j][i],output_pixels[1][j][i],output_pixels[2][j][i]);
