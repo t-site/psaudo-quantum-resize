@@ -23,8 +23,8 @@ SOFTWARE.
 #include<stdio.h>
 #include<gd.h>
 
-#define KNL 10
-#define HALF_KNL 5
+#define KNL 12
+#define HALF_KNL 6
 #define MAX 256
 #define COLORS 3
 #define ITER 5
@@ -119,7 +119,6 @@ static gdImagePtr twice(gdImagePtr input_image)
 	imageSY = input_imageSY * 2;
 	gdImageSetInterpolationMethod(input_image,GD_BELL);
 	output_image = gdImageScale(input_image,  imageSX , imageSY );
-	gdImageSmooth(output_image , 100.0f);
 	return output_image;
 }
 
@@ -139,9 +138,9 @@ gdImagePtr quantum_interpole(gdImagePtr input_image , int threshold)
 		for( x=0; x < input_SX ; x++)
 		{
 			int read_x,read_y,i,j;
-			for( read_y= y-1 , j=0 ; j<HALF_KNL ; read_y++ , j++ )
+			for( read_y= y-((HALF_KNL -1)/2) , j=0 ; j<HALF_KNL ; read_y++ , j++ )
 			{
-				for( read_x= x-1 , i=0 ; i<HALF_KNL ; read_x++ ,i++ )
+				for( read_x= x-((HALF_KNL-1)/2) , i=0 ; i<HALF_KNL ; read_x++ ,i++ )
 				{
 					int tmp;
 					tmp = gdImageGetTrueColorPixel( input_image , read_x , read_y );
@@ -150,9 +149,9 @@ gdImagePtr quantum_interpole(gdImagePtr input_image , int threshold)
 					input_pixels[2][j][i] = gdTrueColorGetBlue(tmp);
 				}
 			}
-			for( read_y= y*2-2 , j=0 ; j<KNL ; read_y++ , j++ )
+			for( read_y= y*2 -HALF_KNL+1 , j = 0 ; j < KNL ; read_y++ , j++ )
 			{
-				for( read_x= x*2-2 , i=0 ; i<KNL ; read_x++ ,i++ )
+				for( read_x= x*2 -HALF_KNL+1 , i = 0 ; i < KNL ; read_x++ ,i++ )
 				{
 					int tmp;
 					tmp = gdImageGetTrueColorPixel( output_image , read_x , read_y );
@@ -162,9 +161,9 @@ gdImagePtr quantum_interpole(gdImagePtr input_image , int threshold)
 				}
 			}
 			quantum_art(threshold);
-			for( read_y = y*2 , j = HALF_KNL-1 ; j <= HALF_KNL ; read_y++ , j++ )
+			for( read_y = y*2 , j =  HALF_KNL -1 ; j <= HALF_KNL ; read_y++ , j++ )
 			{
-				for( read_x = x*2 , i = HALF_KNL-1 ; i <= HALF_KNL ; read_x++ ,i++ )
+				for( read_x = x*2 , i = HALF_KNL -1 ; i <= HALF_KNL ; read_x++ ,i++ )
 				{
 					int pixel;
 					pixel = gdImageColorClosest(output_image,output_pixels[0][j][i],output_pixels[1][j][i],output_pixels[2][j][i]);
