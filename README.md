@@ -12,18 +12,21 @@ resize to 3x3, compare to each input pixels.
 if difference is small , next random number width is small.
 and compute 1/PSNR , if 1/PSNR more than threshold ,continue "psaudo-quantum" process.
 scale by cascade with a shell script for much more high quality.
+it unhide detail.
 
-I cannot know all of quantum computing , but I feel quantum-resize process similar to real quantum computing.
+I cannot know all of quantum computing , but I feel quantum-resize process similar to real quantum aniering .
 
-quantum-resize requires C compiler , /dev/urandom , and libgd graphics library.
+quantum-resize requires C compiler , int >= 32bit  , /dev/urandom , and libgd graphics library.
 
-### New qresize1.5 command
-New qresize1.5 command available.
-shrink output image to 1.5x for suppressed juggy. but cause blurred image.
-Recommend for front-end of cascade scale. 
+### New qresize1.4 command
+New qresize1.4 command available.
+I feel qresize multiply image data for 2x , sqrt(2) resolution.
+2x resolution output cause blur.
+1.4 aka 7/5 near equal sqrt(2)
+qresize1.4 is an psaudo-quantum 1.4x interpolation. not shrink such as past qresize1.5 .
 
+todo: solve small particle noise
 ## quantum-resize for many photograph
 quantum-resize is match for photograph from the real world.
 and good for 2D animation frames.
 for pure 2D paint ... use waifu2x first.
-
