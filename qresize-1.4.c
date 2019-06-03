@@ -23,15 +23,14 @@ SOFTWARE.
 
 #include<gd.h>
 #include<unistd.h>
-#include"quantum_interpole.h"
+#include"quantum_interpole-1.4.h"
 int main(int argc,char **argv)
 {
-	gdImagePtr input_image , qint_image , output_image;
-	char *input_file_name , *output_file_name , *err;
+	gdImagePtr input_image,output_image;
+	char *input_file_name , *output_file_name  ;
 	int parameters = 0;
 	int threshold = 8;
 	int opt;
-	int outputSX , outputSY;
 	while ((opt = getopt(argc, argv, "i:o:t:")) != -1) 
 	{
 		switch(opt)
@@ -53,7 +52,7 @@ int main(int argc,char **argv)
 				}
 			break;
 			default:
-				fputs("psaudo quantum computing 1.5x image resizer\n",stderr);
+				fputs("psaudo quantum computing 2x image  resizer\n",stderr);
 				fprintf(stderr,"%s -i input_file_name -o output_file_name [-f process threshold]\n",argv[0]);
 				fputs("Default process threshold as 8. less to more shapen , but cause particle artifact.\n",stderr);
 				fputs("more to eliminate particles.\n",stderr);
@@ -86,22 +85,16 @@ int main(int argc,char **argv)
 		fputs("Error: Can not open the input file\n",stderr);
 		return 2;
 	}
-	qint_image = quantum_interpole(input_image , threshold);
-	gdImageSetInterpolationMethod( qint_image , GD_BELL );
-	outputSX = gdImageSX( input_image ) + gdImageSX( input_image ) / 2 ;
-	outputSY = gdImageSY( input_image ) + gdImageSY( input_image ) / 2 ;
-	output_image = gdImageScale( qint_image , outputSX , outputSY );
+	output_image = quantum_interpole(input_image , threshold);
 	if( GD_FALSE == gdImageFile(output_image,output_file_name ))
 	{
 		fputs("Error: Can not save Output image file\n",stderr);
 
 		gdImageDestroy(input_image);
-		gdImageDestroy(qint_image);
 		gdImageDestroy(output_image);
 		return 5;
 	}
 	gdImageDestroy(input_image);
-	gdImageDestroy(qint_image);
 	gdImageDestroy(output_image);
 	return 0;
 }
