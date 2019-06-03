@@ -29,7 +29,7 @@ int main(int argc,char **argv)
 	gdImagePtr input_image,output_image;
 	char *input_file_name , *output_file_name  ;
 	int parameters = 0;
-	int threshold = 8;
+	int threshold = 1;
 	int opt;
 	while ((opt = getopt(argc, argv, "i:o:t:")) != -1) 
 	{
