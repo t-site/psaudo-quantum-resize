@@ -22,6 +22,7 @@ SOFTWARE.
 */
 #include<stdio.h>
 #include<gd.h>
+#include<string.h>
 
 #define OUT_KNL_SIZE 7
 #define IN_KNL_SIZE 5
@@ -48,6 +49,7 @@ static void half_psnr_mse( void )
 	mse_all[0]=0;
 	mse_all[1]=0;
 	mse_all[2]=0;
+
 	for( y=0 ; y < IN_KNL_SIZE ; y++  )
 	{
 		for( x=0 ; x < IN_KNL_SIZE ; x++  )
@@ -84,9 +86,9 @@ static void half_psnr_mse( void )
 				a = (long)input_pixels[c][y][x];
 				b = (long)halved_pixels[c][y][x];
 				mse_all[c]  += (( a - b )*( a - b ));
-				mse[c][y][x]= ( a - b ) /2 ;
+				mse[c][y][x]= ( a - b ) / 4;
 				if( mse[c][y][x] < 0 )
-					mse[c][y][x] = b - a ;
+					mse[c][y][x] = ( b - a ) / 4 ;
 				if (mse[c][y][x] < 2 )
 					mse[c][y][x] = 2;
 			}
@@ -132,11 +134,12 @@ static int quantum_art( int threshold )
 			}
 		}
 		half_psnr_mse() ;
-		if (  mse_all[0] / ( IN_KNL_SIZE * IN_KNL_SIZE * MAX * MAX  ) < threshold )
+		/* 35 as experimental value. might IN_KNL_SIZE * OUT_KNL_SIZE */
+		if (  mse_all[0] / ( IN_KNL_SIZE * IN_KNL_SIZE * OUT_KNL_SIZE * OUT_KNL_SIZE * (MAX-35) ) < threshold )
 		{
-			if (  mse_all[1] / ( IN_KNL_SIZE * IN_KNL_SIZE * MAX * MAX ) < threshold )
+			if (  mse_all[1] / ( IN_KNL_SIZE * IN_KNL_SIZE * OUT_KNL_SIZE * OUT_KNL_SIZE * (MAX-35) ) < threshold )
 			{
-				if (  mse_all[2] / ( IN_KNL_SIZE * IN_KNL_SIZE * MAX * MAX ) < threshold )
+				if (  mse_all[2] / ( IN_KNL_SIZE * IN_KNL_SIZE * OUT_KNL_SIZE * OUT_KNL_SIZE * (MAX-35) ) < threshold )
 				{
 					break;
 				}
@@ -190,7 +193,7 @@ gdImagePtr quantum_interpole(gdImagePtr input_image , int threshold)
 			out_x = x * 7 / 5;
 			out_y = y * 7 / 5;
 			gdImageCopy(input_kernel , input_image , 0,0, x - HALF_IN_KNL_SZ , y - HALF_IN_KNL_SZ ,IN_KNL_SIZE , IN_KNL_SIZE );
-			gdImageCopy(output_kernel , output_image , 0,0, out_x - OUT_KNL_SIZE /2 , out_y - OUT_KNL_SIZE /2 , OUT_KNL_SIZE , OUT_KNL_SIZE );
+			gdImageCopy(output_kernel , output_image , 0,0, out_x - 3 , out_y - 3 , OUT_KNL_SIZE , OUT_KNL_SIZE );
 			quantum_art(threshold);
 			gdImageCopy(output_image,output_kernel,out_x -1 , out_y -1 , 2,2,3,3);
 		}
