@@ -17,7 +17,7 @@ it unhide detail.
 I cannot know all of quantum computing , but I feel quantum-resize process similar to real quantum annealing .
 
 psaudo-quantum-resize requires C compiler , int >= 32bit  , /dev/urandom , 8bit per color channel , and libgd graphics library.
-##qresize command howto
+## qresize command howto
 
 ```sh
 qresize -i input-file -o output-file -t threshold
