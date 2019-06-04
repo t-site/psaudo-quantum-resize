@@ -63,7 +63,7 @@ static long half_psnr_mse(void)
 		{
 			for ( c=0 ; c < COLORS ; c++ )
 			{
-				long a,b,tmp;
+				long a,b;
 				a = (long)input_pixels[c][y][x];
 				b = (long)halved_pixels[c][y][x];
 				all  += (( a - b )*( a - b ));
