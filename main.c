@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018 "tropposite" as on https://github.com/t-site
+Copyright (c) 2019 "tropposite" as on https://github.com/t-site
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ SOFTWARE.
 int main(int argc,char **argv)
 {
 	gdImagePtr input_image,output_image;
-	char *input_file_name , *output_file_name , *err;
+	char *input_file_name , *output_file_name  ;
 	int parameters = 0;
 	int threshold = 8;
 	int opt;
@@ -45,17 +45,17 @@ int main(int argc,char **argv)
 			break;
 			case 't':
 				threshold = atoi(optarg);
-				if( threshold < 0 )
+				if( threshold < 1 )
 				{
-					fputs("Error: threshold number less than zero\n",stderr);
+					fputs("Error: threshold number less than one\n",stderr);
 					return 4;
 				}
 			break;
 			default:
-				fputs("psaudo quantum computing 2x image  resizer\n",stderr);
-				fprintf(stderr,"%s -i input_file_name -o output_file_name [-f process threshold]\n",argv[0]);
-				fputs("Default process threshold as 8. less to more shapen , but cause particle artifact.\n",stderr);
-				fputs("more to eliminate particles.\n",stderr);
+				fputs("psaudo quantum computing 2x image resizer\n",stderr);
+				fprintf(stderr,"%s -i <input_file_name> -o <output_file_name> [-f process threshold]\n",argv[0]);
+				fputs("Default process threshold as 8.\n less to more shapen ,\n but cause particle artifact and stall.\n",stderr);
+				fputs(" more to eliminate particles.\n",stderr);
 		}
 				
 	}
