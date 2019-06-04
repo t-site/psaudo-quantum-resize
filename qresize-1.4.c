@@ -45,17 +45,16 @@ int main(int argc,char **argv)
 			break;
 			case 't':
 				threshold = atoi(optarg);
-				if( threshold < 0 )
+				if( threshold < 1 )
 				{
-					fputs("Error: threshold number less than zero\n",stderr);
+					fputs("Error: threshold number less than one\n",stderr);
 					return 4;
 				}
 			break;
 			default:
-				fputs("psaudo quantum computing 2x image  resizer\n",stderr);
-				fprintf(stderr,"%s -i input_file_name -o output_file_name [-f process threshold]\n",argv[0]);
-				fputs("Default process threshold as 8. less to more shapen , but cause particle artifact.\n",stderr);
-				fputs("more to eliminate particles.\n",stderr);
+				fputs("psaudo quantum computing 1.4x image  resizer\n",stderr);
+				fprintf(stderr,"%s -i <input_file_name> -o <output_file_name> [-f process threshold]\n",argv[0]);
+				fputs("Default process threshold as 1.\n if this command stall, increse more.\n less to more shapen ,but cause particle artifact.\n",stderr);
 		}
 				
 	}
