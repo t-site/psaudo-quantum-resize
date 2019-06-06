@@ -22,6 +22,7 @@ SOFTWARE.
 */
 #include<stdio.h>
 #include<gd.h>
+#include<limits.h>
 
 #define KNL 12
 #define HALF_KNL 6
@@ -32,6 +33,7 @@ SOFTWARE.
 static int input_pixels[COLORS][KNL][KNL];
 static int output_pixels[COLORS][KNL][KNL];
 static int mse[COLORS][HALF_KNL][HALF_KNL];
+static int t=1;
 static unsigned int imageSX;
 static unsigned int imageSY;
 static FILE *randomfd;
@@ -78,12 +80,12 @@ static long half_psnr_mse(void)
 	return all;
 }
 
-static int quantum_art( int threshold )
+static int quantum_art( void )
 {
 	unsigned int x,y,c;
 	long all;
 	half_psnr_mse() ;
-	for(;;)
+	for(int counter = 0;;)
 	{
 		for( y=0 ; y < KNL ; y++)
 		{
@@ -93,6 +95,7 @@ static int quantum_art( int threshold )
 				{
 	
 					signed char rand;
+					counter++;
 					rand = 0xFF & fgetc(randomfd);
 					output_pixels[c][y][x] += (int)rand % ( mse[c][y/2][x/2] /2 ) ;
 					if(output_pixels[c][y][x] >= MAX )
@@ -102,8 +105,15 @@ static int quantum_art( int threshold )
 				}
 			}
 		}
+		/*CPU cycle counter detects stall.*/
+		if ( counter >= INT_MAX / (HALF_KNL * 4 * 7 + KNL * 2 * 7 * COLORS))
+		{
+			t++;
+			printf ("t=%d\n",t);
+			counter = 0;
+		}
 		all = half_psnr_mse() ;
-		if ( all /( HALF_KNL * HALF_KNL * COLORS * COLORS * (MAX-1) ) < threshold )
+		if ( all /( HALF_KNL * HALF_KNL * COLORS * COLORS * (MAX-1) ) < t )
 			return 0;
 		
 	}
@@ -127,6 +137,7 @@ gdImagePtr quantum_interpole(gdImagePtr input_image , int threshold)
 	gdImagePtr output_image;
 	unsigned int x,y;
 	unsigned int input_SX,input_SY;
+	t = threshold;
 	input_SX = gdImageSX(input_image);
 	input_SY = gdImageSY(input_image);
 	randomfd = fopen("/dev/urandom","r");
@@ -160,7 +171,7 @@ gdImagePtr quantum_interpole(gdImagePtr input_image , int threshold)
 					output_pixels[2][j][i] = gdTrueColorGetBlue(tmp);
 				}
 			}
-			quantum_art(threshold);
+			quantum_art();
 			for( read_y = y*2 , j =  HALF_KNL -1 ; j <= HALF_KNL ; read_y++ , j++ )
 			{
 				for( read_x = x*2 , i = HALF_KNL -1 ; i <= HALF_KNL ; read_x++ ,i++ )

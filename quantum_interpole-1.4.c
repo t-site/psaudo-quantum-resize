@@ -23,6 +23,7 @@ SOFTWARE.
 #include<stdio.h>
 #include<gd.h>
 #include<string.h>
+#include<limits.h>
 
 #define OUT_KNL_SIZE 7
 #define IN_KNL_SIZE 5
@@ -40,6 +41,7 @@ static unsigned int imageSX;
 static unsigned int imageSY;
 static FILE *randomfd;
 static long mse_all[COLORS];
+static int t = 1;
 
 static void half_psnr_mse( void )
 {
@@ -97,7 +99,7 @@ static void half_psnr_mse( void )
 	gdImageDestroy( cand_kernel );
 }
 
-static int quantum_art( int threshold )
+static int quantum_art( void )
 {
 	unsigned int x,y,c;
 	half_psnr_mse() ;
@@ -114,7 +116,7 @@ static int quantum_art( int threshold )
 			output_pixels[2][y][x] =  gdTrueColorGetBlue(color);
 		}
 	}
-	for(;;)
+	for(int counter = 0 ;;)
 	{
 		for( y=0 ; y < OUT_KNL_SIZE ; y++)
 		{
@@ -124,6 +126,7 @@ static int quantum_art( int threshold )
 				{
 	
 					signed char rand;
+					counter++;
 					rand = 0xFF & fgetc(randomfd);
 					output_pixels[c][y][x] += (int)rand % ( mse[c][y*5/7][x*5/7] /2 ) ;
 					if(output_pixels[c][y][x] >= BRIGHT )
@@ -133,13 +136,20 @@ static int quantum_art( int threshold )
 				}
 			}
 		}
+		/*CPU cycle counter detects stall.*/
+		if ( counter >= INT_MAX / (IN_KNL_SIZE * 6 * 7 + OUT_KNL_SIZE * 2 * 7))
+		{
+			t++;
+			printf ("t=%d\n",t);
+			counter = 0;
+		}
 		half_psnr_mse() ;
 		/* 35 as experimental value. might IN_KNL_SIZE * OUT_KNL_SIZE */
-		if (  mse_all[0] / ( IN_KNL_SIZE * IN_KNL_SIZE * OUT_KNL_SIZE * OUT_KNL_SIZE * (MAX-35) ) < threshold )
+		if (  mse_all[0] / ( IN_KNL_SIZE * IN_KNL_SIZE * OUT_KNL_SIZE * OUT_KNL_SIZE * (MAX-35) ) < t )
 		{
-			if (  mse_all[1] / ( IN_KNL_SIZE * IN_KNL_SIZE * OUT_KNL_SIZE * OUT_KNL_SIZE * (MAX-35) ) < threshold )
+			if (  mse_all[1] / ( IN_KNL_SIZE * IN_KNL_SIZE * OUT_KNL_SIZE * OUT_KNL_SIZE * (MAX-35) ) < t )
 			{
-				if (  mse_all[2] / ( IN_KNL_SIZE * IN_KNL_SIZE * OUT_KNL_SIZE * OUT_KNL_SIZE * (MAX-35) ) < threshold )
+				if (  mse_all[2] / ( IN_KNL_SIZE * IN_KNL_SIZE * OUT_KNL_SIZE * OUT_KNL_SIZE * (MAX-35) ) < t )
 				{
 					break;
 				}
@@ -179,6 +189,7 @@ gdImagePtr quantum_interpole(gdImagePtr input_image , int threshold)
 	gdImagePtr output_image;
 	unsigned int x,y;
 	unsigned int input_SX,input_SY;
+	t = threshold;
 	input_SX = gdImageSX(input_image);
 	input_SY = gdImageSY(input_image);
 	randomfd = fopen("/dev/urandom","r");
@@ -194,10 +205,9 @@ gdImagePtr quantum_interpole(gdImagePtr input_image , int threshold)
 			out_y = y * 7 / 5;
 			gdImageCopy(input_kernel , input_image , 0,0, x - HALF_IN_KNL_SZ , y - HALF_IN_KNL_SZ ,IN_KNL_SIZE , IN_KNL_SIZE );
 			gdImageCopy(output_kernel , output_image , 0,0, out_x - 3 , out_y - 3 , OUT_KNL_SIZE , OUT_KNL_SIZE );
-			quantum_art(threshold);
+			quantum_art();
 			gdImageCopy(output_image,output_kernel,out_x -1 , out_y -1 , 2,2,3,3);
 		}
-		printf("%u lines\n",y);
 	}
 	fclose(randomfd);
 	gdImageDestroy(input_kernel);	

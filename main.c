@@ -54,8 +54,7 @@ int main(int argc,char **argv)
 			default:
 				fputs("psaudo quantum computing 2x image resizer\n",stderr);
 				fprintf(stderr,"%s -i <input_file_name> -o <output_file_name> [-f process threshold]\n",argv[0]);
-				fputs("Default process threshold as 8.\n less to more shapen ,\n but cause particle artifact and stall.\n",stderr);
-				fputs(" more to eliminate particles.\n",stderr);
+				fputs("Default process threshold as 8.\n",stderr);
 		}
 				
 	}
