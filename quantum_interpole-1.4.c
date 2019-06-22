@@ -31,7 +31,7 @@ SOFTWARE.
 #define MAX 255
 #define BRIGHT 256
 #define COLORS 3
-#define ITER 5
+#define RA_SIZE 4194304
 
 static gdImagePtr input_kernel;
 static gdImagePtr cand_kernel;
@@ -41,7 +41,9 @@ static unsigned int imageSX;
 static unsigned int imageSY;
 static FILE *randomfd;
 static long mse_all[COLORS];
-static int t = 1;
+static int t = 2;
+static signed char randarray[RA_SIZE];
+static int randpointer = 0;
 
 static void half_psnr_mse( void )
 {
@@ -98,6 +100,25 @@ static void half_psnr_mse( void )
 	}
 	gdImageDestroy( cand_kernel );
 }
+static signed char getrand(void)
+{
+	signed char rand;
+	if(randpointer == 0)
+	{
+		fread(randarray,sizeof(signed char),RA_SIZE,randomfd);
+	}
+	rand = randarray[randpointer];
+	if( randpointer >= RA_SIZE )
+	{
+		randpointer = 0;
+	}
+	else
+	{
+		randpointer++;
+	}
+	return rand;
+
+}
 
 static int quantum_art( void )
 {
@@ -127,7 +148,7 @@ static int quantum_art( void )
 	
 					signed char rand;
 					counter++;
-					rand = 0xFF & fgetc(randomfd);
+					rand = getrand();
 					output_pixels[c][y][x] += (int)rand % ( mse[c][y*5/7][x*5/7] /2 ) ;
 					if(output_pixels[c][y][x] >= BRIGHT )
 						output_pixels[c][y][x] = BRIGHT-1 ;
@@ -144,12 +165,11 @@ static int quantum_art( void )
 			counter = 0;
 		}
 		half_psnr_mse() ;
-		/* 35 as experimental value. might IN_KNL_SIZE * OUT_KNL_SIZE */
-		if (  mse_all[0] / ( IN_KNL_SIZE * IN_KNL_SIZE * OUT_KNL_SIZE * OUT_KNL_SIZE * (MAX-35) ) < t )
+		if (  mse_all[0] / ( IN_KNL_SIZE * IN_KNL_SIZE * OUT_KNL_SIZE * OUT_KNL_SIZE * (MAX /3 ) ) < t )
 		{
-			if (  mse_all[1] / ( IN_KNL_SIZE * IN_KNL_SIZE * OUT_KNL_SIZE * OUT_KNL_SIZE * (MAX-35) ) < t )
+			if (  mse_all[1] / ( IN_KNL_SIZE * IN_KNL_SIZE * OUT_KNL_SIZE * OUT_KNL_SIZE * (MAX /3) ) < t )
 			{
-				if (  mse_all[2] / ( IN_KNL_SIZE * IN_KNL_SIZE * OUT_KNL_SIZE * OUT_KNL_SIZE * (MAX-35) ) < t )
+				if (  mse_all[2] / ( IN_KNL_SIZE * IN_KNL_SIZE * OUT_KNL_SIZE * OUT_KNL_SIZE * (MAX /3 ) ) < t )
 				{
 					break;
 				}
