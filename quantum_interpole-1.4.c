@@ -103,19 +103,16 @@ static void half_psnr_mse( void )
 static signed char getrand(void)
 {
 	signed char rand;
+	if( randpointer >= RA_SIZE )
+	{
+		randpointer = 0;
+	}
 	if(randpointer == 0)
 	{
 		fread(randarray,sizeof(signed char),RA_SIZE,randomfd);
 	}
 	rand = randarray[randpointer];
-	if( randpointer >= RA_SIZE )
-	{
-		randpointer = 0;
-	}
-	else
-	{
-		randpointer++;
-	}
+	randpointer++;
 	return rand;
 
 }
