@@ -31,9 +31,9 @@ SOFTWARE.
 #define ITER 5
 #define RA_SIZE 4194304
 
-static int input_pixels[COLORS][KNL][KNL];
-static int output_pixels[COLORS][KNL][KNL];
-static int mse[COLORS][HALF_KNL][HALF_KNL];
+static int input_pixels[KNL][KNL][COLORS];
+static int output_pixels[KNL][KNL][COLORS];
+static int mse[HALF_KNL][HALF_KNL][COLORS];
 static int t=1;
 static int randpointer=0;
 static signed char randarray[RA_SIZE];
@@ -41,9 +41,9 @@ static unsigned int imageSX;
 static unsigned int imageSY;
 static FILE *randomfd;
 
-static long half_psnr_mse(void)
+static inline long half_psnr_mse(void)
 {
-	int halved_pixels[COLORS][HALF_KNL][HALF_KNL];
+	int halved_pixels[HALF_KNL][HALF_KNL][COLORS];
 	unsigned int x,y,ox,oy,c;
 	long all=0;
 	for( y=0 , oy=0 ; y < HALF_KNL ; y++ , oy+=2 )
@@ -53,11 +53,11 @@ static long half_psnr_mse(void)
 			for ( c=0 ; c<COLORS ; c++)
 			{
 				int tmp =0;
-				tmp += output_pixels[c][oy][ox] ;
-				tmp += output_pixels[c][oy][ox+1];
-				tmp += output_pixels[c][oy+1][ox];
-				tmp += output_pixels[c][oy+1][ox+1];
-				halved_pixels[c][y][x] = tmp / 4;
+				tmp += output_pixels[oy][ox][c] ;
+				tmp += output_pixels[oy][ox+1][c];
+				tmp += output_pixels[oy+1][ox][c];
+				tmp += output_pixels[oy+1][ox+1][c];
+				halved_pixels[y][x][c] = tmp / 4;
 			}
 		}
 	}
@@ -69,21 +69,21 @@ static long half_psnr_mse(void)
 			for ( c=0 ; c < COLORS ; c++ )
 			{
 				long a,b;
-				a = (long)input_pixels[c][y][x];
-				b = (long)halved_pixels[c][y][x];
+				a = (long)input_pixels[y][x][c];
+				b = (long)halved_pixels[y][x][c];
 				all  += (( a - b )*( a - b ));
-				mse[c][y][x]= a - b ;
-				if( mse[c][y][x] < 0 )
-					mse[c][y][x] = b - a ;
-				if (mse[c][y][x] < 2 )
-					mse[c][y][x] = 2;
+				mse[y][x][c]= ( a - b ) /2 ;
+				if( mse[y][x][c] < 0 )
+					mse[y][x][c] = b - a ;
+				if (mse[y][x][c] < 2 )
+					mse[y][x][c] = 2;
 			}
 		}
 	}
 	return all;
 }
 
-static signed char getrand(void)
+static inline signed char getrand(void)
 {
 	signed char rand;
 	if( randpointer >= RA_SIZE )
@@ -115,12 +115,12 @@ static int quantum_art( void )
 				{
 					signed char rand;
 					rand = getrand();
-					output_pixels[c][y][x] += (int)rand % ( mse[c][y/2][x/2] /2 ) ;
+					output_pixels[y][x][c] += (int)rand % ( mse[y/2][x/2][c]  ) ;
 					counter++;
-					if(output_pixels[c][y][x] >= MAX )
-						output_pixels[c][y][x] = MAX-1 ;
-					else if(output_pixels[c][y][x] < 0 )
-						output_pixels[c][y][x] = 0 ;
+					if(output_pixels[y][x][c] >= MAX )
+						output_pixels[y][x][c] = MAX-1 ;
+					else if(output_pixels[y][x][c] < 0 )
+						output_pixels[y][x][c] = 0 ;
 					
 				}
 			}
@@ -175,9 +175,9 @@ gdImagePtr quantum_interpole(gdImagePtr input_image , int threshold)
 				{
 					int tmp;
 					tmp = gdImageGetTrueColorPixel( input_image , read_x , read_y );
-					input_pixels[0][j][i] = gdTrueColorGetRed(tmp);
-					input_pixels[1][j][i] = gdTrueColorGetGreen(tmp);
-					input_pixels[2][j][i] = gdTrueColorGetBlue(tmp);
+					input_pixels[j][i][0] = gdTrueColorGetRed(tmp);
+					input_pixels[j][i][1] = gdTrueColorGetGreen(tmp);
+					input_pixels[j][i][2] = gdTrueColorGetBlue(tmp);
 				}
 			}
 			for( read_y= y*2 -HALF_KNL+1 , j = 0 ; j < KNL ; read_y++ , j++ )
@@ -186,9 +186,9 @@ gdImagePtr quantum_interpole(gdImagePtr input_image , int threshold)
 				{
 					int tmp;
 					tmp = gdImageGetTrueColorPixel( output_image , read_x , read_y );
-					output_pixels[0][j][i] = gdTrueColorGetRed(tmp);
-					output_pixels[1][j][i] = gdTrueColorGetGreen(tmp);
-					output_pixels[2][j][i] = gdTrueColorGetBlue(tmp);
+					output_pixels[j][i][0] = gdTrueColorGetRed(tmp);
+					output_pixels[j][i][1] = gdTrueColorGetGreen(tmp);
+					output_pixels[j][i][2] = gdTrueColorGetBlue(tmp);
 				}
 			}
 			quantum_art();
@@ -197,7 +197,7 @@ gdImagePtr quantum_interpole(gdImagePtr input_image , int threshold)
 				for( read_x = x*2 , i = HALF_KNL -1 ; i <= HALF_KNL ; read_x++ ,i++ )
 				{
 					int pixel;
-					pixel = gdImageColorClosest(output_image,output_pixels[0][j][i],output_pixels[1][j][i],output_pixels[2][j][i]);
+					pixel = gdImageColorClosest(output_image,output_pixels[j][i][0],output_pixels[j][i][1],output_pixels[j][i][2]);
 					gdImageSetPixel(output_image,read_x,read_y,pixel);
 				}
 			}
