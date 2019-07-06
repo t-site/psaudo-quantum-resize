@@ -169,9 +169,9 @@ gdImagePtr quantum_interpole(gdImagePtr input_image , int threshold)
 		for( x=0; x < input_SX ; x++)
 		{
 			int read_x,read_y,i,j;
-			for( read_y= y-((HALF_KNL -1)/2) , j=0 ; j<HALF_KNL ; read_y++ , j++ )
+			for( read_y= y-(HALF_KNL/2) , j=0 ; j<HALF_KNL ; read_y++ , j++ )
 			{
-				for( read_x= x-((HALF_KNL-1)/2) , i=0 ; i<HALF_KNL ; read_x++ ,i++ )
+				for( read_x= x-(HALF_KNL/2) , i=0 ; i<HALF_KNL ; read_x++ ,i++ )
 				{
 					int tmp;
 					tmp = gdImageGetTrueColorPixel( input_image , read_x , read_y );
@@ -180,9 +180,9 @@ gdImagePtr quantum_interpole(gdImagePtr input_image , int threshold)
 					input_pixels[j][i][2] = gdTrueColorGetBlue(tmp);
 				}
 			}
-			for( read_y= y*2 -HALF_KNL+1 , j = 0 ; j < KNL ; read_y++ , j++ )
+			for( read_y= y*2 -HALF_KNL , j = 0 ; j < KNL ; read_y++ , j++ )
 			{
-				for( read_x= x*2 -HALF_KNL+1 , i = 0 ; i < KNL ; read_x++ ,i++ )
+				for( read_x= x*2 -HALF_KNL , i = 0 ; i < KNL ; read_x++ ,i++ )
 				{
 					int tmp;
 					tmp = gdImageGetTrueColorPixel( output_image , read_x , read_y );
@@ -192,9 +192,9 @@ gdImagePtr quantum_interpole(gdImagePtr input_image , int threshold)
 				}
 			}
 			quantum_art();
-			for( read_y = y*2 , j =  HALF_KNL -1 ; j <= HALF_KNL ; read_y++ , j++ )
+			for( read_y = y*2 -1 , j =  HALF_KNL -1 ; j <= HALF_KNL ; read_y++ , j++ )
 			{
-				for( read_x = x*2 , i = HALF_KNL -1 ; i <= HALF_KNL ; read_x++ ,i++ )
+				for( read_x = x*2 -1 , i = HALF_KNL -1 ; i <= HALF_KNL ; read_x++ ,i++ )
 				{
 					int pixel;
 					pixel = gdImageColorClosest(output_image,output_pixels[j][i][0],output_pixels[j][i][1],output_pixels[j][i][2]);
