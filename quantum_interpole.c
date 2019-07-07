@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018 "tropposite" as on https://github.com/t-site
+Copyright (c) 2019 "tropposite" as on https://github.com/t-site
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
