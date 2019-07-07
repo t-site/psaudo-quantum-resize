@@ -31,7 +31,7 @@ SOFTWARE.
 #define ITER 5
 #define RA_SIZE 4194304
 
-static int input_pixels[KNL][KNL][COLORS];
+static int input_pixels[HALF_KNL][HALF_KNL][COLORS];
 static int output_pixels[KNL][KNL][COLORS];
 static int mse[HALF_KNL][HALF_KNL][COLORS];
 static int t=1;
