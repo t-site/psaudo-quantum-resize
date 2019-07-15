@@ -104,8 +104,9 @@ static int quantum_art( void )
 {
 	unsigned int x,y,c;
 	long all;
+	long counter;
 	all = half_psnr_mse() ;
-	for(int counter = 0;;)
+	for(counter = 0;;)
 	{
 		if ( all /( HALF_KNL * HALF_KNL * COLORS * COLORS * (MAX - KNL * KNL ) ) < t )
 			return 0;
