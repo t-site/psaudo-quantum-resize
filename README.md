@@ -43,8 +43,8 @@ if qresize stall,it threshold increment automatically.
 
 large threshold value specity for speedup.
 
-### New qresize1.4 command
-New qresize1.4 command available.
+### qresize1.4 command
+qresize1.4 command available.
 
 I feel qresize multiply image data for 2x , sqrt(2) resolution.
 
@@ -54,7 +54,7 @@ I feel qresize multiply image data for 2x , sqrt(2) resolution.
 
 qresize1.4 is an psaudo-quantum 1.4x interpolation. not shrink such as past qresize1.5 .
 
-more condense output. and fast to do it.
+currently, process threshold of qresize1.4 is large , PSNR not so good. 
 
 also auto stall detect implimented.
 
