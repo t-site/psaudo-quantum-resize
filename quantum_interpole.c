@@ -203,7 +203,6 @@ gdImagePtr quantum_interpole(gdImagePtr input_image , int threshold)
 				}
 			}
 		}
-		printf("%u lines\n",y);
 	}
 	fclose(randomfd);
 	return output_image;
