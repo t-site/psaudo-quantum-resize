@@ -29,7 +29,7 @@ int main(int argc,char **argv)
 	gdImagePtr input_image,output_image;
 	char *input_file_name , *output_file_name  ;
 	int parameters = 0;
-	int threshold = 8;
+	int threshold = 9;
 	int opt;
 	while ((opt = getopt(argc, argv, "i:o:t:")) != -1) 
 	{
@@ -54,7 +54,7 @@ int main(int argc,char **argv)
 			default:
 				fputs("psaudo quantum computing 2x image resizer\n",stderr);
 				fprintf(stderr,"%s -i <input_file_name> -o <output_file_name> [-f process threshold]\n",argv[0]);
-				fputs("Default process threshold as 8.\n",stderr);
+				fputs("Default process threshold as 9.\n",stderr);
 		}
 				
 	}
