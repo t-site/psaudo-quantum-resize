@@ -8,7 +8,9 @@ What is "Quantum computing" for modern/past digital computer?
 
 quantum-resize use random numbers from UNIX /dev/urandom device.
 
-first,modern/past digital interpolation is applied. this process eliminate almost quantum computing resource.
+first,modern/past digital interpolation is applied. and if 1/PSNR is less than threshold , omit after step.
+
+this process eliminate almost quantum computing resource.
 
 next to "psaudo-quantum" process.
 
