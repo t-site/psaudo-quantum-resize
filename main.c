@@ -24,6 +24,7 @@ SOFTWARE.
 #include<gd.h>
 #include<unistd.h>
 #include"quantum_interpole.h"
+#include"divide.h"
 int main(int argc,char **argv)
 {
 	gdImagePtr input_image,output_image;
@@ -84,7 +85,7 @@ int main(int argc,char **argv)
 		fputs("Error: Can not open the input file\n",stderr);
 		return 2;
 	}
-	output_image = quantum_interpole(input_image , threshold);
+	output_image = striped_qresize2(input_image , threshold);
 	if( GD_FALSE == gdImageFile(output_image,output_file_name ))
 	{
 		fputs("Error: Can not save Output image file\n",stderr);
