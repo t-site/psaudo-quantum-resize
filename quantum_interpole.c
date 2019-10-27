@@ -165,9 +165,9 @@ gdImagePtr quantum_interpole(gdImagePtr input_image , int threshold)
 	if(randomfd == NULL)
 		return NULL;
 	output_image = twice(input_image);
-	for( y=0 ; y < input_SY ; y++)
+	for( y=0 ; y < input_SY ; y += HALF_KNL )
 	{
-		for( x=0; x < input_SX ; x++)
+		for( x=0; x < input_SX ; x+= HALF_KNL )
 		{
 			int read_x,read_y,i,j;
 			for( read_y= y-(HALF_KNL/2) , j=0 ; j<HALF_KNL ; read_y++ , j++ )

@@ -206,9 +206,9 @@ gdImagePtr quantum_interpole(gdImagePtr input_image , int threshold)
 	if(randomfd == NULL)
 		return NULL;
 	output_image = twice(input_image);
-	for( y=0 ; y < input_SY ; y++)
+	for( y=0 ; y < input_SY ; y += HALF_IN_KNL_SZ )
 	{
-		for( x=0; x < input_SX ; x++)
+		for( x=0; x < input_SX ; x += HALF_IN_KNL_SZ )
 		{
 			int out_x , out_y ;
 			out_x = x * OUT_KNL_SIZE / IN_KNL_SIZE ;
