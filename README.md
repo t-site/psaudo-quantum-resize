@@ -58,6 +58,11 @@ currently, process threshold of qresize1.4 is large , PSNR not so good.
 
 also auto stall detect implimented.
 
+### qresize3 command
+qresize3 multiply by 3 command appeared.
+
+TODO: solve juggy region.
+
 ## quantum-resize for many photograph
 
 quantum-resize is match for photograph from the real world.
