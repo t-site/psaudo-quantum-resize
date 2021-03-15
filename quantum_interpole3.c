@@ -56,7 +56,6 @@ static int randpointer = 0;
 
 static long half_psnr_mse( void )
 {
-	gdImagePtr tmp_kernel;
 	int halved_pixels[ IN_KNL_SIZE ][ IN_KNL_SIZE ][COLORS];
 	int input_pixels [ IN_KNL_SIZE ][ IN_KNL_SIZE ][COLORS];
 	unsigned int x,y,c;
@@ -74,9 +73,7 @@ static long half_psnr_mse( void )
 			input_pixels[y][x][2] =  gdTrueColorGetBlue(color);
 		}
 	}
-	tmp_kernel = gdImageScale ( output_kernel, HALF_IN_KNL_SZ , HALF_IN_KNL_SZ);
-	cand_kernel = gdImageScale ( tmp_kernel , IN_KNL_SIZE , IN_KNL_SIZE );
-	gdImageDestroy( tmp_kernel );
+	cand_kernel = gdImageScale ( output_kernel , IN_KNL_SIZE , IN_KNL_SIZE );
 	for( y=0 ; y < IN_KNL_SIZE ; y++  )
 	{
 		for( x=0 ; x < IN_KNL_SIZE ; x++  )
@@ -138,7 +135,7 @@ static int quantum_art( void )
 	for(counter = 0 ;;)
 	{
 		mse_all = half_psnr_mse() ;
-		if (  mse_all / ( IN_KNL_SIZE * IN_KNL_SIZE * COLORS * MAX * t ) == 0 )
+		if (  mse_all / ( IN_KNL_SIZE * IN_KNL_SIZE * COLORS * t ) == 0 )
 		{
 			break;
 		}
