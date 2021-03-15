@@ -40,6 +40,11 @@ static signed char randarray[RA_SIZE];
 static unsigned int imageSX;
 static unsigned int imageSY;
 static FILE *randomfd;
+static	float ft[3][3] = {
+		{ 0 , -1 , 0 },
+		{ -1 , 5 , -1 },
+		{ 0 , -1 , 0 }
+	};
 
 static inline long half_psnr_mse(void)
 {
@@ -150,6 +155,7 @@ static gdImagePtr twice(gdImagePtr input_image)
 	imageSY = input_imageSY * 2;
 	gdImageSetInterpolationMethod(input_image,GD_BELL);
 	output_image = gdImageScale(input_image,  imageSX , imageSY );
+	gdImageConvolution( output_image , ft , 1.0 , 0.0 );
 	return output_image;
 }
 
