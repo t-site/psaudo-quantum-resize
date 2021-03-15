@@ -43,9 +43,9 @@ static gdImagePtr output_kernel;
 static int mse[IN_KNL_SIZE][IN_KNL_SIZE][COLORS];
 static float fil[3][3] =
 	{
-		{0,-2.24,0},
-		{-2.24,10,-2.24},
-		{0,-2.24,0}
+		{0, -1, 0},
+		{-1, 5,-1},
+		{0, -1, 0}
 	};
 static unsigned int imageSX;
 static unsigned int imageSY;
@@ -204,7 +204,7 @@ static gdImagePtr twice(gdImagePtr input_image)
 	imageSY = input_imageSY * OUT_KNL_SIZE / IN_KNL_SIZE ;
 	gdImageSetInterpolationMethod(input_image,GD_BELL);
 	output_image = gdImageScale(input_image,  imageSX , imageSY );
-/*	gdImageConvolution(output_image,fil,1,0);*/
+	gdImageConvolution(output_image,fil,1.0,0.0);
 	input_kernel = gdImageCreateTrueColor( IN_KNL_SIZE + PAD * 2 , IN_KNL_SIZE + PAD * 2 );
 	output_kernel = gdImageCreateTrueColor( OUT_KNL_SIZE , OUT_KNL_SIZE );
 	return output_image;
