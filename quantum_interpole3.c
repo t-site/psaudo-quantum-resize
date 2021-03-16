@@ -43,9 +43,9 @@ static gdImagePtr output_kernel;
 static int mse[IN_KNL_SIZE][IN_KNL_SIZE][COLORS];
 static float fil[3][3] =
 	{
-		{0, -1, 0},
-		{-1, 5,-1},
-		{0, -1, 0}
+		{-.014, -.014, -.014},
+		{-.014, 1.112, -.014},
+		{-.014, -.014, -.014}
 	};
 static unsigned int imageSX;
 static unsigned int imageSY;
@@ -135,7 +135,7 @@ static int quantum_art( void )
 	for(counter = 0 ;;)
 	{
 		mse_all = half_psnr_mse() ;
-		if (  mse_all / ( IN_KNL_SIZE * IN_KNL_SIZE * COLORS * t ) == 0 )
+		if (  mse_all / ( IN_KNL_SIZE * IN_KNL_SIZE * COLORS * MAX * t ) == 0 )
 		{
 			break;
 		}
