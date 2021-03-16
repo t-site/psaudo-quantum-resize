@@ -41,9 +41,9 @@ static unsigned int imageSX;
 static unsigned int imageSY;
 static FILE *randomfd;
 static	float ft[3][3] = {
-		{ 0 , -1 , 0 },
-		{ -1 , 5 , -1 },
-		{ 0 , -1 , 0 }
+		{ 0    , -.03 ,  0   },
+		{ -.03 , 1.12 , -.03 },
+		{ 0    , -.03 ,  0   }
 	};
 
 static inline long half_psnr_mse(void)
